@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
-function die(error_message){
+function die(error_message, e=-1){
     console.error(error_message);
-    process.exit(-1)
+    process.exit(e)
+}
+
+function shutdown(e=0){
+  process.exit(e)
 }
 
 var domain=process.env.MAILGUN_SEND_DOMAIN;
@@ -18,7 +22,8 @@ const optionDefinitions = [
   { name: 'from', alias: 'f', type: String },
   { name: 'to', alias: 't', type: String },
   { name: 'message', alias: 'm', type: String },
-  { name: 'subject', alias: 's', type: String }
+  { name: 'subject', alias: 's', type: String },
+  { name: 'exit_on_empty_message', alias: 'e', type: String },
 ]
 
 const options = commandLineArgs(optionDefinitions)
@@ -34,8 +39,13 @@ if(!to_email)
     die("No destination email specified")
 
 var message=options.message
-if(!message)
+if(!message){
+  if(options.exit_on_empty_message){
+    shutdown()
+  }else{
     die("No message specified")
+  }
+}
 
 var subject=options.subject
                 || "Emailer notification"
