@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import smtplib
 from email.message import EmailMessage
 import os
